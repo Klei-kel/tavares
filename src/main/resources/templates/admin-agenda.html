@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin — Agenda</title>
+  <link rel="stylesheet" href="/css/app.css"/>
+</head>
+<body>
+  <div class="header">
+    <img src="/img/logo.png" alt="Logo" style="height:44px;width:auto;border-radius:12px"/>
+    <div>
+      <strong style="font-size:18px">Admin — Agenda</strong><br/>
+      <span class="small">Agenda liberada até: <span class="badge" th:text="${#temporals.format(releasedUntil, 'dd/MM/yyyy')}">--</span></span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <form method="post" action="/admin/release-next-week">
+        <button type="submit">Liberar próxima semana</button>
+      </form>
+      <div class="small" style="margin-top:8px;">Login: <strong>admin</strong> / <strong>admin123</strong></div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3 style="margin-top:0;">Agendamentos (próximos 7 dias)</h3>
+      <div th:if="${#lists.isEmpty(appointments)}" class="small">Nenhum agendamento.</div>
+
+      <table th:if="${!#lists.isEmpty(appointments)}" style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr class="small" style="text-align:left;">
+            <th style="padding:8px;border-bottom:1px solid #eee;">Quando</th>
+            <th style="padding:8px;border-bottom:1px solid #eee;">Cliente</th>
+            <th style="padding:8px;border-bottom:1px solid #eee;">Serviço</th>
+            <th style="padding:8px;border-bottom:1px solid #eee;">Leva e traz</th>
+            <th style="padding:8px;border-bottom:1px solid #eee;">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="a : ${appointments}" class="small">
+            <td style="padding:8px;border-bottom:1px solid #f2f2f2;" th:text="${#temporals.format(a.startAt,'dd/MM HH:mm')}">--</td>
+            <td style="padding:8px;border-bottom:1px solid #f2f2f2;">
+              <div><strong th:text="${a.customerName}">Nome</strong></div>
+              <div th:text="${a.phone}">Telefone</div>
+            </td>
+            <td style="padding:8px;border-bottom:1px solid #f2f2f2;" th:text="${a.service.name}">Serviço</td>
+            <td style="padding:8px;border-bottom:1px solid #f2f2f2;" th:text="${a.levaTraz ? 'Sim' : 'Não'}">Não</td>
+            <td style="padding:8px;border-bottom:1px solid #f2f2f2;">
+              <form th:action="@{'/admin/cancel/' + ${a.id}}" method="post">
+                <button type="submit" style="background:#b00020;">Cancelar</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="small">H2 console: <a href="/h2" target="_blank">/h2</a> (JDBC: <code>jdbc:h2:mem:tavares</code>, user <code>sa</code>).</div>
+    </div>
+  </div>
+</body>
+</html>

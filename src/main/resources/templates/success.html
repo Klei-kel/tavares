@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Agendado ✅</title>
+  <link rel="stylesheet" href="/css/app.css"/>
+</head>
+<body>
+  <div class="header">
+    <img src="/img/logo.png" alt="Logo" style="height:52px;width:auto;border-radius:12px"/>
+    <div>
+      <strong style="font-size:18px">Agendamento confirmado</strong><br/>
+      <span class="small">Número: <span class="badge" th:text="${appt.id}">0</span></span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <p style="margin-top:0;">Obrigado, <strong th:text="${appt.customerName}">Cliente</strong>! Seu horário foi reservado.</p>
+
+      <div class="small">
+        <div><strong>Serviço:</strong> <span th:text="${appt.service.name}">Serviço</span></div>
+        <div><strong>Data e hora:</strong> <span th:text="${#temporals.format(appt.startAt, 'dd/MM/yyyy HH:mm')}">--</span></div>
+        <div><strong>Leva e traz:</strong> <span th:text="${appt.levaTraz ? 'Sim' : 'Não'}">Não</span></div>
+        <div th:if="${appt.levaTraz}"><strong>Endereço:</strong> <span th:text="${appt.pickupAddress}">---</span></div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <a href="/" class="small" style="text-decoration:underline;">Fazer outro agendamento</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

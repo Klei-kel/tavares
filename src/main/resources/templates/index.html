@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Tavares Lava Rápido — Agendamento</title>
+  <link rel="stylesheet" href="/css/app.css"/>
+</head>
+<body>
+  <div class="header">
+    <img src="/img/logo.png" alt="Logo" style="height:52px;width:auto;border-radius:12px"/>
+    <div>
+      <strong style="font-size:18px" th:text="${brandName}">Tavares Lava Rápido</strong><br/>
+      <span class="small" th:text="${address}">Estr. Canal do Cocaia, 2605</span><br/>
+      <span class="small">WhatsApp: <span th:text="${whatsapp}">(11) 94186-7850</span></span><br/>
+      <span class="small">Funcionamento: Ter–Sáb 08:00–17:30 • Dom 08:00–14:30</span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+      <div class="card">
+        <h2 style="margin:0 0 6px 0;">Agende sua lavagem</h2>
+        <div class="small">Agenda liberada até: <span class="badge" th:text="${#temporals.format(releasedUntil, 'dd/MM/yyyy')}">--/--/----</span></div>
+
+        <form method="post" action="/agendar" th:object="${form}">
+          <label>Serviço</label>
+          <select th:field="*{serviceId}" required>
+            <option value="" selected disabled>Selecione…</option>
+            <option th:each="s : ${services}" th:value="${s.id}" th:text="${s.name + ' — R$ ' + #numbers.formatDecimal(s.price, 1, 'COMMA', 2, 'POINT')}"></option>
+          </select>
+
+          <label>Seu nome</label>
+          <input th:field="*{customerName}" placeholder="Ex.: Cleyton" required/>
+
+          <label>WhatsApp</label>
+          <input th:field="*{phone}" placeholder="(11) 90000-0000" required/>
+
+          <label>Dia</label>
+          <select id="daySelect" th:field="*{date}" required>
+            <option value="" selected disabled>Selecione o dia…</option>
+            <option th:each="d : ${days}" th:value="${d.date}" th:text="${#temporals.format(d.date, 'EEEE, dd/MM')}"></option>
+          </select>
+
+          <label>Horário</label>
+          <div class="times" id="times"></div>
+          <input type="hidden" th:field="*{time}" id="timeInput"/>
+
+          <label style="margin-top:14px;">
+            <input type="checkbox" th:field="*{levaTraz}" id="levaTraz" style="width:auto; margin-right:8px;"/>
+            Quero <strong>Leva e Traz</strong>
+          </label>
+
+          <div id="pickupBlock" class="hidden">
+            <label>Endereço para retirada</label>
+            <input th:field="*{pickupAddress}" placeholder="Rua, número, bairro, referência"/>
+          </div>
+
+          <label>Observações (opcional)</label>
+          <textarea th:field="*{notes}" rows="3" placeholder="Ex.: carro com cadeirinha, portão, etc."></textarea>
+
+          <button type="submit">Confirmar agendamento</button>
+          <div class="small" style="margin-top:10px;">Ao confirmar, o horário fica reservado na hora.</div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0;">Preços</h3>
+        <ul class="small" style="margin:0; padding-left:18px;">
+          <li>Carro pequeno: R$ 35,00 • Com cera: R$ 40,00</li>
+          <li>Carro grande: R$ 50,00 • Com cera: R$ 60,00</li>
+          <li>Moto: R$ 30,00</li>
+          <li>Lavagem completa: R$ 130,00 (pequeno) / R$ 150,00 (grande)</li>
+          <li>Mensal (4 lavagens/mês): R$ 140,00 (pequeno) / R$ 180,00 (grande)</li>
+        </ul>
+        <hr style="border:none;border-top:1px solid #eee;margin:14px 0;">
+        <div class="small">Admin: <a href="/admin/agenda">/admin/agenda</a></div>
+      </div>
+    </div>
+  </div>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+  const days = /*[[${days}]]*/ [];
+  const daySelect = document.getElementById('daySelect');
+  const timesDiv = document.getElementById('times');
+  const timeInput = document.getElementById('timeInput');
+
+  const levaTraz = document.getElementById('levaTraz');
+  const pickupBlock = document.getElementById('pickupBlock');
+  levaTraz.addEventListener('change', () => pickupBlock.classList.toggle('hidden', !levaTraz.checked));
+
+  function renderTimesFor(dateStr){
+    timesDiv.innerHTML = '';
+    timeInput.value = '';
+    const d = days.find(x => x.date === dateStr);
+    if(!d || !d.times || d.times.length === 0){
+      timesDiv.innerHTML = '<span class="small">Sem horários disponíveis.</span>';
+      return;
+    }
+    d.times.forEach(t => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'timebtn';
+      btn.textContent = t;
+      btn.onclick = () => {
+        document.querySelectorAll('.timebtn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        timeInput.value = t;
+      };
+      timesDiv.appendChild(btn);
+    });
+  }
+  daySelect.addEventListener('change', (e) => renderTimesFor(e.target.value));
+/*]]>*/
+</script>
+</body>
+</html>
