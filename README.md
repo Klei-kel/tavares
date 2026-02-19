@@ -68,6 +68,4 @@ app:
 
 Pronto: ao agendar, o sistema cria um evento no Google Calendar.
 
-## Deploy (link público)
-Depois de testar local, você pode subir em Render/Railway/Fly.io.
-O banco H2 funciona para testes, mas para produção o ideal é PostgreSQL/MySQL.
+
